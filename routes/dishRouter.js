@@ -1,13 +1,12 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const Dishes = require('../models/dishes')
 
 const dishRouter = express.Router()
 
 dishRouter.use(bodyParser.json())
-
 dishRouter
   .route('/')
   .get((req, res, next) => {
@@ -26,12 +25,14 @@ dishRouter
     Dishes.create(req.body)
       .then(
         (dish) => {
-          console.log('Dish Created ', dish)
+          console.warn('Dish Created ', dish)
           res.statusCode = 200
           res.setHeader('Content-Type', 'application/json')
           res.json(dish)
         },
-        (err) => next(err),
+        (err) => {
+          return next(err)
+        },
       )
       .catch((err) => next(err))
   })
@@ -51,7 +52,7 @@ dishRouter
       )
       .catch((err) => next(err))
   })
-
+  
 dishRouter
   .route('/:dishId')
   .get((req, res, next) => {
@@ -111,7 +112,7 @@ dishRouter
             res.setHeader('Content-Type', 'application/json')
             res.json(dish.comments)
           } else {
-            err = new Error('Dish ' + req.params.dishId + ' not found')
+            err = new Error(`Dish ${req.params.dishId} not found`)
             err.status = 404
             return next(err)
           }
